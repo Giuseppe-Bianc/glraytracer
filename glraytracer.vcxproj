@@ -61,6 +61,8 @@
     <IntDir>bin-int\Debug-windows-x86_64\glraytracer\</IntDir>
     <TargetName>glraytracer</TargetName>
     <TargetExt>.exe</TargetExt>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -68,6 +70,8 @@
     <IntDir>bin-int\Release-windows-x86_64\glraytracer\</IntDir>
     <TargetName>glraytracer</TargetName>
     <TargetExt>.exe</TargetExt>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -75,13 +79,15 @@
     <IntDir>bin-int\Dist-windows-x86_64\glraytracer\</IntDir>
     <TargetName>glraytracer</TargetName>
     <TargetExt>.exe</TargetExt>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WL_DEBUG;SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>external\spdlog\include;external\glfw\include;external\glm;external\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>external\spdlog\include;external\glfw\include;external\glm;external\stb;external\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -101,7 +107,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WL_RELEASE;SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>external\spdlog\include;external\glfw\include;external\glm;external\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>external\spdlog\include;external\glfw\include;external\glm;external\stb;external\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -128,7 +134,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WL_DIST;SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>external\spdlog\include;external\glfw\include;external\glm;external\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>external\spdlog\include;external\glfw\include;external\glm;external\stb;external\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -155,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="src\EBO.h" />
     <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\VAO.h" />
     <ClInclude Include="src\VBO.h" />
@@ -164,14 +171,12 @@
   <ItemGroup>
     <ClCompile Include="src\EBO.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\VAO.cpp" />
     <ClCompile Include="src\VBO.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="src\default.frag" />
-    <None Include="src\default.vert" />
+    <ClCompile Include="src\stb.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

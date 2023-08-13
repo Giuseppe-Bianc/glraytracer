@@ -13,4 +13,8 @@ public:
     void Activate() noexcept;
     // Deletes the Shader Program
     void Delete() noexcept;
+
+private:
+    // Checks if the different Shaders have compiled properly
+    void compileErrors(unsigned int shader, const char *type);
 };

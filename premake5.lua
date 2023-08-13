@@ -16,6 +16,7 @@ project "glraytracer"
       "external/spdlog/include",
       "external/glfw/include",
       "external/glm",
+      "external/stb",
       "external/glad/include"
    }
    libdirs { "external/glfw/lib-vc2022" }

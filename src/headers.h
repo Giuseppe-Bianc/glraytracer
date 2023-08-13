@@ -104,3 +104,4 @@ static inline constexpr double scale = 256.0;
 static inline constexpr double invStHMinusOne = 1.0 / C_D(ST_h - 1);
 static inline constexpr double invStWMinusOne = 1.0 / C_D(ST_w - 1);
 static inline constexpr std::string_view windowTitle = "Ray Tracer";
+static inline constexpr unsigned long long doublesize = sizeof(double);

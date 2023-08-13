@@ -1,25 +1,25 @@
 #include "EBO.h"
 #include "Shader.h"
 #include "Timer.h"
+#include "Texture.h"
 #include "VAO.h"
 #include "VBO.h"
 #include "headers.h"
+#include <stb_image.h>
 
 // Vertices coordinates
-std::array<GLfloat, 18> vertices = {
-    -0.5f,  -0.288675135f, 0.0f,  // Lower left corner
-    0.5f,   -0.288675135f, 0.0f,  // Lower right corner
-    0.0f,   0.57735027f,   0.0f,  // Upper corner
-    -0.25f, 0.144337568f,  0.0f,  // Inner left
-    0.25f,  0.144337568f,  0.0f,  // Inner right
-    0.0f,   -0.288675135f, 0.0f   // Inner down
+
+std::array<GLdouble, 32> vertices = {
+    //     COORDINATES     /        COLORS      /   TexCoord  //
+    -1.0, -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,  // Lower left corner
+    -1.0,  1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,  // Upper left corner
+     1.0,  1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0,  // Upper right corner
+     1.0, -1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0   // Lower right corner
 };
 
-// Indices for vertices order
-std::array<GLuint, 9> indices = {
-    0, 3, 5,  // Lower left triangle
-    3, 2, 4,  // Lower right triangle
-    5, 4, 1   // Upper triangle
+std::array<GLuint, 6> indices = {
+    0, 2, 1,  // Upper triangle
+    0, 3, 2   // Lower triangle
 };
 
 void errorCallback(int error, const char *description) { GLWFERR(error, description) }
@@ -55,6 +55,7 @@ int main() {
 
     window = glfwCreateWindow(w, h, windowTitle.data(), nullptr, nullptr);
     if(!window) {
+        LERROR("Failed to create GLFW window");
         glfwTerminate();
         return -1;
     }
@@ -92,6 +93,7 @@ int main() {
           wcreation);
     glfwShowWindow(window);
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
     Timer timer2;
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         LERROR("Failed to initialize GLAD");
@@ -108,7 +110,7 @@ int main() {
     LINFO("total window setup time {:f}", totalw);
     Timer timer3;
 
-    // Generates Shader object using shaders defualt.vert and default.frag
+    // Generates Shader object using shaders default.vert and default.frag
     Shader shaderProgram("./src/default.vert", "./src/default.frag");
 
     // Generates Vertex Array Object and binds it
@@ -120,8 +122,10 @@ int main() {
     // Generates Element Buffer Object and links it to indices
     EBO EBO1(indices.data(), sizeof(indices));
 
-    // Links VBO to VAO
-    VAO1.LinkVBO(VBO1, 0);
+    // Links VBO attributes such as coordinates and colors to VAO
+    VAO1.LinkAttrib(VBO1, 0, 3, GL_DOUBLE, 8 * doublesize, nullptr);
+    VAO1.LinkAttrib(VBO1, 1, 3, GL_DOUBLE, 8 * doublesize, (void*)(3 * doublesize));
+    VAO1.LinkAttrib(VBO1, 2, 2, GL_DOUBLE, 8 * doublesize, (void*)(6 * doublesize));
     // Unbind all to prevent accidentally modifying them
     VAO1.Unbind();
     VBO1.Unbind();
@@ -132,18 +136,27 @@ int main() {
     const double totalT = totalw + shadersetup;
     LINFO("total setup time {:f}", totalT);
 
+    // Gets ID of uniform called "scale"
+    const GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
+
+    // Texture
+    Texture popCat("./src/pop_cat.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+    popCat.texUnit(shaderProgram, "tex0", 0);
+
     // Main while loop
     while(!glfwWindowShouldClose(window)) {
-        // Specify the color of the background
-        glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
         // Clean the back buffer and assign the new color to it
         glClear(GL_COLOR_BUFFER_BIT);
         // Tell OpenGL which Shader Program we want to use
         shaderProgram.Activate();
+        // Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
+        glUniform1f(uniID, 0.0f);
+        // Binds texture so that is appears in rendering
+        popCat.Bind();
         // Bind the VAO so OpenGL knows to use it
         VAO1.Bind();
         // Draw primitives, number of indices, datatype of indices, index of indices
-        glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // Swap the back buffer with the front buffer
         glfwSwapBuffers(window);
         // Take care of all GLFW events
@@ -154,6 +167,7 @@ int main() {
     VAO1.Delete();
     VBO1.Delete();
     EBO1.Delete();
+    popCat.Delete();
     shaderProgram.Delete();
     // Delete window before ending the program
     glfwDestroyWindow(window);

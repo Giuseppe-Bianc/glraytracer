@@ -2,10 +2,10 @@
 
 VAO::VAO() noexcept { glGenVertexArrays(1, &ID); }
 
-// Links a VBO to the VAO using a certain layout
-void VAO::LinkVBO(VBO &VBO, GLuint layout) noexcept {
+// Links a VBO Attribute such as a position or color to the VAO
+void VAO::LinkAttrib(VBO &VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride,const void *offset) noexcept {
     VBO.Bind();
-    glVertexAttribPointer(layout, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);
     glEnableVertexAttribArray(layout);
     VBO.Unbind();
 }
