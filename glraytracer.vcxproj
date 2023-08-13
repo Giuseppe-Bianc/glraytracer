@@ -156,18 +156,18 @@
     <ClInclude Include="src\EBO.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Timer.h" />
+    <ClInclude Include="src\VAO.h" />
+    <ClInclude Include="src\VBO.h" />
     <ClInclude Include="src\casts.h" />
     <ClInclude Include="src\headers.h" />
-    <ClInclude Include="src\VBO.h" />
-    <ClInclude Include="src\VAO.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EBO.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\VAO.cpp" />
+    <ClCompile Include="src\VBO.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\VBO.cpp" />
-    <ClCompile Include="src\VAO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\default.frag" />

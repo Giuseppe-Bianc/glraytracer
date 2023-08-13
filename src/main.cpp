@@ -5,7 +5,8 @@
 #include "VBO.h"
 #include "headers.h"
 
-constexpr std::array<GLfloat, 18> vertices = {
+// Vertices coordinates
+std::array<GLfloat, 18> vertices = {
     -0.5f,  -0.288675135f, 0.0f,  // Lower left corner
     0.5f,   -0.288675135f, 0.0f,  // Lower right corner
     0.0f,   0.57735027f,   0.0f,  // Upper corner
@@ -14,37 +15,16 @@ constexpr std::array<GLfloat, 18> vertices = {
     0.0f,   -0.288675135f, 0.0f   // Inner down
 };
 
-constexpr std::array<GLuint, 9> indices = {
+// Indices for vertices order
+std::array<GLuint, 9> indices = {
     0, 3, 5,  // Lower left triangle
-    3, 2, 4,  // Upper triangle
-    5, 4, 1   // Lower right triangle
+    3, 2, 4,  // Lower right triangle
+    5, 4, 1   // Upper triangle
 };
-
-// Vertex Shader source code
-constexpr const char *vertexShaderSource = R"(
-#version 460 core
-#extension GL_ABC_foobar_feature : enable
-#extension GL_ARB_gpu_shader_fp64 : enable
-layout (location = 0) in vec3 aPos;
-void main(){
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-}
-)";
-
-// Fragment Shader source code
-constexpr const char *fragmentShaderSource = R"(
-#version 460 core
-#extension GL_ABC_foobar_feature : enable
-#extension GL_ARB_gpu_shader_fp64 : enable
-out vec4 FragColor;
-void main(){
-    FragColor = vec4(0.8f, 0.3f, 0.02f, 1.0f);
-}
-)";
 
 void errorCallback(int error, const char *description) { GLWFERR(error, description) }
 
-void framebufferSizeCallback([[maybe_unused]] GLFWwindow *window, int width, int height) { glViewport(0, 0, width, height); }
+void framebufferSizeCallback([[maybe_unused]] GLFWwindow *window, int width, int height) noexcept { glViewport(0, 0, width, height); }
 
 void keyCallback(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) noexcept {
     switch(key) {
@@ -127,57 +107,57 @@ int main() {
     const double totalw = wcreation + glaadsetup;
     LINFO("total window setup time {:f}", totalw);
     Timer timer3;
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-    glCompileShader(vertexShader);
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-    glCompileShader(fragmentShader);
 
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    // Generates Shader object using shaders defualt.vert and default.frag
+    Shader shaderProgram("./src/default.vert", "./src/default.frag");
 
-    GLuint VAO, VBO, EBO;
+    // Generates Vertex Array Object and binds it
+    VAO VAO1;
+    VAO1.Bind();
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
+    // Generates Vertex Buffer Object and links it to vertices
+    VBO VBO1(vertices.data(), sizeof(vertices));
+    // Generates Element Buffer Object and links it to indices
+    EBO EBO1(indices.data(), sizeof(indices));
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    // Links VBO to VAO
+    VAO1.LinkVBO(VBO1, 0);
+    // Unbind all to prevent accidentally modifying them
+    VAO1.Unbind();
+    VBO1.Unbind();
+    EBO1.Unbind();
     timer3.stop();
     const double shadersetup = timer3.elapsedSeconds();
     LINFO("shaders,vao evbo setup eseguito in {:f}", shadersetup);
     const double totalT = totalw + shadersetup;
     LINFO("total setup time {:f}", totalT);
 
+    // Main while loop
     while(!glfwWindowShouldClose(window)) {
+        // Specify the color of the background
         glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+        // Clean the back buffer and assign the new color to it
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
+        // Tell OpenGL which Shader Program we want to use
+        shaderProgram.Activate();
+        // Bind the VAO so OpenGL knows to use it
+        VAO1.Bind();
+        // Draw primitives, number of indices, datatype of indices, index of indices
         glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+        // Swap the back buffer with the front buffer
         glfwSwapBuffers(window);
+        // Take care of all GLFW events
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    glDeleteProgram(shaderProgram);
+    // Delete all the objects we've created
+    VAO1.Delete();
+    VBO1.Delete();
+    EBO1.Delete();
+    shaderProgram.Delete();
+    // Delete window before ending the program
     glfwDestroyWindow(window);
+    // Terminate GLFW before ending the program
     glfwTerminate();
     return 0;
 }
