@@ -6,10 +6,12 @@
 #include "VAO.h"
 #include "VBO.h"
 #include "Vec3.h"
+#include "camera.h"
 #include "headers.h"
+#include "hittable.h"
+#include "hittable_list.h"
+#include "sphere.h"
 #include <stb_image.h>
-#include <stb_image_write.h>
-// #define LOGING_PROGRESS
 
 // Vertices coordinates
 
@@ -49,24 +51,6 @@ double constexpr sqrtcx(double x) {
                                                                  : std::numeric_limits<double>::quiet_NaN();
 }*/
 
-bool hit_sphere(const point3 &center, double radius, const ray &r) {
-    vec3 oc = r.origin() - center;
-    auto a = dot(r.direction(), r.direction());
-    auto b = 2.0 * dot(oc, r.direction());
-    auto c = dot(oc, oc) - radius * radius;
-    auto discriminant = b * b - 4 * a * c;
-    return (discriminant >= 0);
-}
-
-Color ray_color(const ray &r) {
-    if(hit_sphere(point3(0, 0, -1), 0.5, r))
-        return 255.0 * Color(1, 0, 0);
-
-    vec3 unit_direction = unit_vector(r.direction());
-    auto a = 0.5 * (unit_direction.y() + 1.0);
-    return 255.0 * ((1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0));
-}
-
 void keyCallback(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) noexcept {
     switch(key) {
     case GLFW_KEY_ESCAPE:
@@ -85,57 +69,16 @@ int main() {
     auto console = spdlog::stdout_color_mt("console");
     spdlog::set_default_logger(console);
     GLFWwindow *window = nullptr;
-    int channels = 3;  // RGB channels
 
-    // Camera
+    hittable_list world;
 
-    auto focal_length = 1.0;
-    auto viewport_height = 2.0;
-    auto viewport_width = viewport_height * (C_D(w) / h);
-    auto camera_center = point3(0, 0, 0);
+    world.add(make_shared<sphere>(point3(0, 0, -1), 0.5));
+    world.add(make_shared<sphere>(point3(0, -100.5, -1), 100));
 
-    // Calculate the vectors across the horizontal and down the vertical viewport edges.
-    auto viewport_u = vec3(viewport_width, 0, 0);
-    auto viewport_v = vec3(0, -viewport_height, 0);
+    camera cam{};
+    cam.samples_per_pixel = 100;
+    cam.render(world);
 
-    // Calculate the horizontal and vertical delta vectors from pixel to pixel.
-    auto pixel_delta_u = viewport_u / w;
-    auto pixel_delta_v = viewport_v / h;
-
-    // Calculate the location of the upper left pixel.
-    auto viewport_upper_left = camera_center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
-    auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
-    LINFO("pixel00_loc={}", pixel00_loc.toString());
-
-    // Create a std::vector to hold the image data
-    std::vector<unsigned char> image_data(w * h * channels);
-    Timer t;
-    const std::string_view filename = "./src/output_image.png";
-    for(int j = 0; j < h; ++j) {
-#ifdef LOGING_PROGRESS
-        LINFO("Scanlines remaining: {} ", (h - j));
-#endif  // LOGING_PROGRESS
-        for(int i = 0; i < w; ++i) {
-            auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
-            auto ray_direction = pixel_center - camera_center;
-            ray r(camera_center, ray_direction);
-
-            Color pixel_color = ray_color(r);
-            const auto index = C_ST((j * w + i) * channels);
-            image_data[index + 0] = C_UC(pixel_color.x());  // Red channel
-            image_data[index + 1] = C_UC(pixel_color.y());  // Green channel
-            image_data[index + 2] = C_UC(pixel_color.z());  // Blue channel
-        }
-    }
-#ifdef LOGING_PROGRESS
-    LINFO("Done.");
-#endif  // LOGING_PROGRESS
-    t.stop();
-
-    LINFO("tempo creazione data immagine {} eseguito in {:f}", filename, t.elapsedSeconds());
-
-    // Write the image data to a file
-    stbi_write_png(filename.data(), w, h, channels, image_data.data(), w * channels);
     Timer timer;
     if(!glfwInit())
         return -1;
@@ -232,8 +175,9 @@ int main() {
     const GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
     // Texture
-    Texture popCat(filename.data(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
-    popCat.texUnit(shaderProgram, "tex0", 0);
+    Texture texture(filename.data(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
+    texture.texUnit(shaderProgram, "tex0", 0);
+    LINFO("loading {} texture.", filename);
 
     // Main while loop
     while(!glfwWindowShouldClose(window)) {
@@ -244,7 +188,7 @@ int main() {
         // Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
         glUniform1f(uniID, 0.0f);
         // Binds texture so that is appears in rendering
-        popCat.Bind();
+        texture.Bind();
         // Bind the VAO so OpenGL knows to use it
         VAO1.Bind();
         // Draw primitives, number of indices, datatype of indices, index of indices
@@ -259,7 +203,7 @@ int main() {
     VAO1.Delete();
     VBO1.Delete();
     EBO1.Delete();
-    popCat.Delete();
+    texture.Delete();
     shaderProgram.Delete();
     // Delete window before ending the program
     glfwDestroyWindow(window);

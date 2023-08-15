@@ -39,6 +39,11 @@ public:
     constexpr std::string toString() const {
         return "(" + std::to_string(e[0]) + ", " + std::to_string(e[1]) + ", " + std::to_string(e[2]) + ")";  // NOSONAR
     }
+    static constexpr vec3 random() { return vec3(random_double(), random_double(), random_double()); }
+
+    static constexpr vec3 random(double min, double max) {
+        return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+    }
 
 private:
     constexpr double sqrtNewtonRaphson(double x, double curr, double prev) const {
