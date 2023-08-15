@@ -1,20 +1,24 @@
 #include "EBO.h"
+#include "Ray.h"
 #include "Shader.h"
-#include "Timer.h"
 #include "Texture.h"
+#include "Timer.h"
 #include "VAO.h"
 #include "VBO.h"
+#include "Vec3.h"
 #include "headers.h"
 #include <stb_image.h>
+#include <stb_image_write.h>
+// #define LOGING_PROGRESS
 
 // Vertices coordinates
 
 std::array<GLdouble, 32> vertices = {
     //     COORDINATES     /        COLORS      /   TexCoord  //
     -1.0, -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,  // Lower left corner
-    -1.0,  1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,  // Upper left corner
-     1.0,  1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0,  // Upper right corner
-     1.0, -1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0   // Lower right corner
+    -1.0, 1.0,  0.0, 0.0, 1.0, 0.0, 0.0, 1.0,  // Upper left corner
+    1.0,  1.0,  0.0, 0.0, 0.0, 1.0, 1.0, 1.0,  // Upper right corner
+    1.0,  -1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0   // Lower right corner
 };
 
 std::array<GLuint, 6> indices = {
@@ -24,7 +28,32 @@ std::array<GLuint, 6> indices = {
 
 void errorCallback(int error, const char *description) { GLWFERR(error, description) }
 
-void framebufferSizeCallback([[maybe_unused]] GLFWwindow *window, int width, int height) noexcept { glViewport(0, 0, width, height); }
+void framebufferSizeCallback([[maybe_unused]] GLFWwindow *window, int width, int height) noexcept {
+    glViewport(0, 0, width, height);
+}
+
+/* namespace Detail {
+    double constexpr sqrtNewtonRaphson(double x, double curr, double prev) {
+        return curr == prev ? curr : sqrtNewtonRaphson(x, 0.5 * (curr + x / curr), curr);
+    }
+}  // namespace Detail
+
+/*
+ * Constexpr version of the square root
+ * Return value:
+ *	- For a finite and non-negative value of "x", returns an approximation for the square root of "x"
+ *   - Otherwise, returns NaN
+ **
+double constexpr sqrtcx(double x) {
+    return x >= 0 && x < std::numeric_limits<double>::infinity() ? Detail::sqrtNewtonRaphson(x, x, 0)
+                                                                 : std::numeric_limits<double>::quiet_NaN();
+}*/
+
+Color ray_color(const ray &r) {
+    vec3 unit_direction = unit_vector(r.direction());
+    auto a = 0.5 * (unit_direction.y() + 1.0);
+    return 255.0 * ((1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0));
+}
 
 void keyCallback(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) noexcept {
     switch(key) {
@@ -44,6 +73,57 @@ int main() {
     auto console = spdlog::stdout_color_mt("console");
     spdlog::set_default_logger(console);
     GLFWwindow *window = nullptr;
+    int channels = 3;  // RGB channels
+
+    // Camera
+
+    auto focal_length = 1.0;
+    auto viewport_height = 2.0;
+    auto viewport_width = viewport_height * (C_D(w) / h);
+    auto camera_center = point3(0, 0, 0);
+
+    // Calculate the vectors across the horizontal and down the vertical viewport edges.
+    auto viewport_u = vec3(viewport_width, 0, 0);
+    auto viewport_v = vec3(0, -viewport_height, 0);
+
+    // Calculate the horizontal and vertical delta vectors from pixel to pixel.
+    auto pixel_delta_u = viewport_u / w;
+    auto pixel_delta_v = viewport_v / h;
+
+    // Calculate the location of the upper left pixel.
+    auto viewport_upper_left = camera_center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
+    auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
+    LINFO("pixel00_loc={}", pixel00_loc.toString());
+
+    // Create a std::vector to hold the image data
+    std::vector<unsigned char> image_data(w * h * channels);
+    Timer t;
+    const std::string_view filename = "./src/output_image.png";
+    for(int j = 0; j < h; ++j) {
+#ifdef LOGING_PROGRESS
+        LINFO("Scanlines remaining: {} ", (h - j));
+#endif  // LOGING_PROGRESS
+        for(int i = 0; i < w; ++i) {
+            auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
+            auto ray_direction = pixel_center - camera_center;
+            ray r(camera_center, ray_direction);
+
+            Color pixel_color = ray_color(r);
+            const auto index = C_ST((j * w + i) * channels);
+            image_data[index + 0] = C_UC(pixel_color.x());  // Red channel
+            image_data[index + 1] = C_UC(pixel_color.y());  // Green channel
+            image_data[index + 2] = C_UC(pixel_color.z());  // Blue channel
+        }
+    }
+#ifdef LOGING_PROGRESS
+    LINFO("Done.");
+#endif  // LOGING_PROGRESS
+    t.stop();
+
+    LINFO("tempo creazione data immagine {} eseguito in {:f}", filename, t.elapsedSeconds());
+
+    // Write the image data to a file
+    stbi_write_png(filename.data(), w, h, channels, image_data.data(), w * channels);
     Timer timer;
     if(!glfwInit())
         return -1;
@@ -124,8 +204,8 @@ int main() {
 
     // Links VBO attributes such as coordinates and colors to VAO
     VAO1.LinkAttrib(VBO1, 0, 3, GL_DOUBLE, 8 * doublesize, nullptr);
-    VAO1.LinkAttrib(VBO1, 1, 3, GL_DOUBLE, 8 * doublesize, (void*)(3 * doublesize));
-    VAO1.LinkAttrib(VBO1, 2, 2, GL_DOUBLE, 8 * doublesize, (void*)(6 * doublesize));
+    VAO1.LinkAttrib(VBO1, 1, 3, GL_DOUBLE, 8 * doublesize, (void *)(3 * doublesize));
+    VAO1.LinkAttrib(VBO1, 2, 2, GL_DOUBLE, 8 * doublesize, (void *)(6 * doublesize));
     // Unbind all to prevent accidentally modifying them
     VAO1.Unbind();
     VBO1.Unbind();
@@ -140,7 +220,7 @@ int main() {
     const GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
     // Texture
-    Texture popCat("./src/pop_cat.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+    Texture popCat(filename.data(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
     popCat.texUnit(shaderProgram, "tex0", 0);
 
     // Main while loop

@@ -61,8 +61,6 @@
     <IntDir>bin-int\Debug-windows-x86_64\glraytracer\</IntDir>
     <TargetName>glraytracer</TargetName>
     <TargetExt>.exe</TargetExt>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -70,8 +68,6 @@
     <IntDir>bin-int\Release-windows-x86_64\glraytracer\</IntDir>
     <TargetName>glraytracer</TargetName>
     <TargetExt>.exe</TargetExt>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -79,8 +75,6 @@
     <IntDir>bin-int\Dist-windows-x86_64\glraytracer\</IntDir>
     <TargetName>glraytracer</TargetName>
     <TargetExt>.exe</TargetExt>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -160,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\EBO.h" />
+    <ClInclude Include="src\Ray.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Timer.h" />
@@ -167,6 +162,7 @@
     <ClInclude Include="src\VBO.h" />
     <ClInclude Include="src\casts.h" />
     <ClInclude Include="src\headers.h" />
+    <ClInclude Include="src\Vec3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EBO.cpp" />

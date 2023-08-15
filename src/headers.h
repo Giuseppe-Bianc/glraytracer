@@ -92,12 +92,12 @@ static inline constexpr long double pi = std::numbers::pi_v<long double>;
 static inline constexpr long double twoPi = 2 * pi;
 static inline constexpr long double halfPi = pi / 2;
 // Dimensioni della finestra
-// static inline constexpr double aspect_ratio = 16.0 / 9.0;
-static inline constexpr double aspect_ratioW = 16.0;
-static inline constexpr double aspect_ratioH = 9.0;
+static inline constexpr double ratioW = 16.0;
+static inline constexpr double ratioH = 9.0;
+static inline constexpr double aspect_ratio = ratioW / ratioH;
 static inline constexpr int imageF = 80;
-static inline constexpr int w = C_I(aspect_ratioW * imageF);
-static inline constexpr int h = C_I(aspect_ratioH * imageF);
+static inline constexpr int w = C_I(ratioW * imageF);
+static inline constexpr int h = C_I(ratioH * imageF);
 static inline constexpr std::size_t ST_w = C_ST(w);
 static inline constexpr std::size_t ST_h = C_ST(h);
 static inline constexpr double scale = 256.0;
