@@ -49,7 +49,19 @@ double constexpr sqrtcx(double x) {
                                                                  : std::numeric_limits<double>::quiet_NaN();
 }*/
 
+bool hit_sphere(const point3 &center, double radius, const ray &r) {
+    vec3 oc = r.origin() - center;
+    auto a = dot(r.direction(), r.direction());
+    auto b = 2.0 * dot(oc, r.direction());
+    auto c = dot(oc, oc) - radius * radius;
+    auto discriminant = b * b - 4 * a * c;
+    return (discriminant >= 0);
+}
+
 Color ray_color(const ray &r) {
+    if(hit_sphere(point3(0, 0, -1), 0.5, r))
+        return 255.0 * Color(1, 0, 0);
+
     vec3 unit_direction = unit_vector(r.direction());
     auto a = 0.5 * (unit_direction.y() + 1.0);
     return 255.0 * ((1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0));
