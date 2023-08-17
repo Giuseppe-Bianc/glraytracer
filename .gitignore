@@ -389,6 +389,7 @@ FodyWeavers.xsd
 /external/**/cmake/
 /external/**/COPYING
 /external/**/COPYING.txt
+/external/**/.gitignore
 /external/opencv/build/etc/haarcascades
 /external/opencv/build/etc/lbpcascades
 /external/opencv/build/etc/licenses
