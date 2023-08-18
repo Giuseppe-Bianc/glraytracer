@@ -1,10 +1,6 @@
 #pragma once
 
-#include "headers.h"
-#include "hittable.h"
-
-using std::make_shared;
-using std::shared_ptr;
+#include "rtweekend.h"
 
 class hittable_list : public hittable {
 public:
@@ -13,7 +9,7 @@ public:
     hittable_list() = default;
     hittable_list(shared_ptr<hittable> object) { add(object); }
 
-    void clear() { objects.clear(); }
+    void clear() noexcept { objects.clear(); }
 
     void add(shared_ptr<hittable> object) { objects.emplace_back(object); }
 

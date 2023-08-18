@@ -2,7 +2,7 @@
 #include "headers.h"
 class vec3 {
 private:
-    std::array<double, 3> e;
+    std::array<double, 3> e{0, 0, 0};
 
 public:
     constexpr vec3() = default;
@@ -71,3 +71,28 @@ constexpr vec3 cross(const vec3 &u, const vec3 &v) {
 }
 
 constexpr vec3 unit_vector(vec3 v) { return v / v.length(); }
+constexpr vec3 random_in_unit_disk() {
+    while(true) {
+        auto p = vec3(random_double(-1, 1), random_double(-1, 1), 0);
+        if(p.length_squared() < 1)
+            return p;
+    }
+}
+
+constexpr vec3 random_in_unit_sphere() {
+    while(true) {
+        auto p = vec3::random(-1, 1);
+        if(p.length_squared() < 1)
+            return p;
+    }
+}
+
+constexpr vec3 random_unit_vector() { return unit_vector(random_in_unit_sphere()); }
+
+constexpr vec3 random_on_hemisphere(const vec3 &normal) {
+    vec3 on_unit_sphere = random_unit_vector();
+    if(dot(on_unit_sphere, normal) > 0.0)  // In the same hemisphere as the normal
+        return on_unit_sphere;
+    else
+        return -on_unit_sphere;
+}

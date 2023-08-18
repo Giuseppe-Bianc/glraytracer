@@ -1,4 +1,5 @@
 #pragma once
+#include <gsl/gsl>
 // Macro to cast to std::byte
 // Description:
 //   This macro is used to cast a value to std::byte type.
@@ -260,9 +261,4 @@
 #define C_U32STRV(x) static_cast<std::u32string_view>(x)
 
 #define C_ST(x) static_cast<std::size_t>(x)
-#define C_CPCU32T(x) static_cast<const uint32_t *>(static_cast<const void *>(x))
-#define C_UC(x) static_cast<unsigned char>(x)
-#define C_32T(x) static_cast<int32_t>(x)
-#define C_U32T(x) static_cast<uint32_t>(x)
-#define C_U8T(c) static_cast<uint8_t>(x)
-#define C_U8(x) static_cast<Uint8>(x)
+#define C_CPCU32T(x) static_cast<const uint32_t *>(static_cast<const void *>(x)

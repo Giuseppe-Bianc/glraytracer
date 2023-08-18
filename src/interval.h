@@ -7,20 +7,21 @@ public:
     double min;
     double max;
 
-    constexpr interval() : min(+infinity), max(-infinity) {}  // Default interval is empty
+    constexpr interval() noexcept : min(+infinity), max(-infinity) {}  // Default interval is empty
 
     constexpr interval(double _min, double _max) : min(_min), max(_max) {}
 
-    bool contains(double x) const { return min <= x && x <= max; }
+    double size() const noexcept { return max - min; }
 
-    bool surrounds(double x) const { return min < x && x < max; }
-    double clamp(double x) const {
-        if(x < min)
-            return min;
-        if(x > max)
-            return max;
-        return x;
+    interval expand(double delta) const {
+        const auto padding = delta / 2;
+        return interval(min - padding, max + padding);
     }
+
+    bool contains(double x) const noexcept { return min <= x && x <= max; }
+
+    bool surrounds(double x) const noexcept { return min < x && x < max; }
+    double clamp(double x) const { return std::clamp(x, min, max); }
 };
 
 static inline constexpr interval empty(+infinity, -infinity);

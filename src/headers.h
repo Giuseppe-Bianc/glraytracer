@@ -109,7 +109,7 @@ static inline constexpr std::string_view filename = "./src/output_image.png";
 static inline constexpr std::string_view windowTitle = "Ray Tracer";
 static inline constexpr unsigned long long doublesize = sizeof(double);
 
-[[nodiscard]] static inline double degrees_to_radians(double degrees) { return degrees * pi / 180.0; }
+[[nodiscard]] static inline constexpr double degrees_to_radians(double degrees) noexcept { return degrees * pi / 180.0; }
 
 [[nodiscard]] static inline double random_double() {
     static std::uniform_real_distribution distribution(0.0, 1.0);
