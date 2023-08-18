@@ -390,6 +390,16 @@ FodyWeavers.xsd
 /external/**/COPYING
 /external/**/COPYING.txt
 /external/**/.gitignore
+/external/**/README.md.txt
+/external/**/LICENSE.md
+/external/**/pom.xml
+/external/**/*.ps1
+/external/**/*.bat
+/external/**/*.py
+/external/**/*.java
+/external/**/*.swift
+/external/**/*.json
+/external/**/*.sh
 /external/opencv/build/etc/haarcascades
 /external/opencv/build/etc/lbpcascades
 /external/opencv/build/etc/licenses
@@ -399,9 +409,6 @@ FodyWeavers.xsd
 /external/opencv/build/OpenCVConfig-version.cmake
 /external/opencv/build/OpenCVConfig.cmake
 /external/opencv/build/setup_vars_opencv4.cmd
-/external/opencv/sources/3rdparty/carotene/README.md
-/external/opencv/sources/3rdparty/cpufeatures/LICENSE
-/external/opencv/sources/3rdparty/cpufeatures/README.md
 /external/opencv/sources/3rdparty/ffmpeg/ffmpeg.cmake
 /external/opencv/sources/3rdparty/ffmpeg/license.txt
 /external/opencv/sources/3rdparty/ffmpeg/readme.txt
@@ -484,3 +491,6 @@ FodyWeavers.xsd
 /external/opencv/sources/CONTRIBUTING.md
 /external/opencv/sources/COPYRIGHT
 /external/opencv/sources/SECURITY.md
+/external/opencv/sources/platforms/winpack_dldt
+/external/opencv/sources/platforms/maven/opencv-it/src/test/java/org/opencv/osgi/DeployOpenCVTest.java
+*.xml
