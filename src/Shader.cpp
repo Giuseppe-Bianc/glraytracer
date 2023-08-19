@@ -1,16 +1,11 @@
 #include "Shader.h"
 
 // Reads a text file and outputs a string with everything in the text file
-std::string get_file_contents(const char *filename) {
-    if(std::ifstream in(filename, std::ios::binary); in.is_open()) {
-        std::string contents;
-        in.seekg(0, std::ios::end);
-        contents.resize(in.tellg());
-        in.seekg(0, std::ios::beg);
-        in.read(&contents[0], contents.size());
-        return contents;
+std::string get_file_contents(const char *filname) {
+    if(std::ifstream in(filname, std::ios::binary); in.is_open()) {
+        return std::string(std::istreambuf_iterator<char>(in), {});
     }
-    throw(errno);
+    throw std::runtime_error(std::strerror(errno));
 }
 
 // Constructor that build the Shader Program from 2 different shaders
@@ -77,7 +72,7 @@ void Shader::compileErrors(unsigned int shader, std::string_view type) const {
     if(type != "PROGRAM") {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
         if(hasCompiled == GL_FALSE) {
-            glGetShaderInfoLog(shader, static_cast<GLsizei>(infoLog.size()), nullptr, infoLog.data());
+            glGetShaderInfoLog(shader, gsl::narrow_cast<GLsizei>(infoLog.size()), nullptr, infoLog.data());
             LERROR("SHADER_COMPILATION_ERROR for: {}", type);
             LERROR("{}", infoLog.data());
         }

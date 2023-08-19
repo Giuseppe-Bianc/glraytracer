@@ -37,8 +37,8 @@ public:
     }
 
 private:
-    shared_ptr<material> mat;
     point3 center{};
     double radius;
+    shared_ptr<material> mat;
     double radsq;
 };
