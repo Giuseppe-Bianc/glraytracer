@@ -9,7 +9,8 @@ public:
     VAO() noexcept;
 
     // Links a VBO Attribute such as a position or color to the VAO
-    void LinkAttrib(VBO &VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride,const void *offset) noexcept;
+    void LinkAttrib(VBO &VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride,
+                    const void *offset) const noexcept;
     // Binds the VAO
     void Bind() noexcept;
     // Unbinds the VAO

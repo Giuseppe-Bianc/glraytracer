@@ -12,12 +12,11 @@ public:
     Texture(const char *image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType) noexcept;
 
     // Assigns a texture unit to a texture
-    void texUnit(Shader &shader, const char *uniform, GLuint unit) noexcept;
+    void texUnit(Shader &shader, const char *uniform, GLuint unit) const noexcept;
     // Binds a texture
-    void Bind() noexcept;
+    void Bind() const noexcept;
     // Unbinds a texture
-    void Unbind() noexcept;
+    void Unbind() const noexcept;
     // Deletes a texture
-    void Delete() noexcept;
+    void Delete() const noexcept;
 };
-

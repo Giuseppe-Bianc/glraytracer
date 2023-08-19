@@ -38,7 +38,7 @@ Texture::Texture(const char *image, GLenum texType, GLenum slot, GLenum format, 
     glBindTexture(texType, 0);
 }
 
-void Texture::texUnit(Shader &shader, const char *uniform, GLuint unit) noexcept {
+void Texture::texUnit(Shader &shader, const char *uniform, GLuint unit) const noexcept {
     // Gets the location of the uniform
     const GLuint texUni = glGetUniformLocation(shader.ID, uniform);
     // Shader needs to be activated before changing the value of a uniform
@@ -47,8 +47,8 @@ void Texture::texUnit(Shader &shader, const char *uniform, GLuint unit) noexcept
     glUniform1i(texUni, unit);
 }
 
-void Texture::Bind() noexcept { glBindTexture(type, ID); }
+void Texture::Bind() const noexcept { glBindTexture(type, ID); }
 
-void Texture::Unbind() noexcept { glBindTexture(type, 0); }
+void Texture::Unbind() const noexcept { glBindTexture(type, 0); }
 
-void Texture::Delete() noexcept { glDeleteTextures(1, &ID); }
+void Texture::Delete() const noexcept { glDeleteTextures(1, &ID); }

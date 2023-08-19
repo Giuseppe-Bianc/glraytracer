@@ -3,23 +3,27 @@
 
 class Timer {
 public:
+#pragma optimize("gt", on)
     Timer() noexcept : start_time(std::chrono::high_resolution_clock::now()) {}
-
-    void stop() noexcept {
+#pragma optimize("gt", on)
+    inline void stop() noexcept {
         end_time = std::chrono::high_resolution_clock::now();
         running = false;
     }
 
-    double elapsedNanoseconds() const noexcept {
+#pragma optimize("gt", on)
+    inline double elapsedNanoseconds() const noexcept {
         const auto end = running ? std::chrono::high_resolution_clock::now() : end_time;
-        return C_D(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start_time).count());
+        return std::chrono::duration<double, std::nano>(end - start_time).count();
     }
 
-    double elapsedMicroseconds() const noexcept { return elapsedNanoseconds() / 1000.0; }
+#pragma optimize("gt", on)
+    inline double elapsedMicroseconds() const noexcept { return elapsedNanoseconds() / 1000.0; }
 
-    double elapsedMilliseconds() const noexcept { return elapsedNanoseconds() / 1'000'000.0; }
-
-    double elapsedSeconds() const noexcept { return elapsedNanoseconds() / 1'000'000'000.0; }
+#pragma optimize("gt", on)
+    inline double elapsedMilliseconds() const noexcept { return elapsedNanoseconds() / 1'000'000.0; }
+#pragma optimize("gt", on)
+    inline double elapsedSeconds() const noexcept { return elapsedNanoseconds() / 1'000'000'000.0; }
 
 private:
     std::chrono::high_resolution_clock::time_point start_time;

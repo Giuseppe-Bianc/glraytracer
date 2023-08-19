@@ -10,11 +10,11 @@ public:
     Shader(const char *vertexFile, const char *fragmentFile);
 
     // Activates the Shader Program
-    void Activate() noexcept;
+    void Activate() const noexcept;
     // Deletes the Shader Program
-    void Delete() noexcept;
+    void Delete() const noexcept;
 
 private:
     // Checks if the different Shaders have compiled properly
-    void compileErrors(unsigned int shader, const char *type);
+    void compileErrors(unsigned int shader, std::string_view type) const;
 };

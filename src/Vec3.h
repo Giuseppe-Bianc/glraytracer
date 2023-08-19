@@ -1,98 +1,113 @@
 #pragma once
 #include "headers.h"
+
 class vec3 {
 private:
-    std::array<double, 3> e{0, 0, 0};
+    glm::dvec3 e;
 
 public:
-    constexpr vec3() = default;
-    constexpr vec3(double e0, double e1, double e2) : e{e0, e1, e2} {}
+    vec3() noexcept : e(0.0, 0.0, 0.0) {}
+    vec3(double e0, double e1, double e2) noexcept : e(e0, e1, e2) {}
+    explicit vec3(const glm::dvec3 &ev) noexcept : e(ev) {}
 
-    constexpr double x() const { return e[0]; }
-    constexpr double y() const { return e[1]; }
-    constexpr double z() const { return e[2]; }
+#pragma optimize("gt", on)
+    double x() const noexcept { return e.x; }
+#pragma optimize("gt", on)
+    double y() const noexcept { return e.y; }
+#pragma optimize("gt", on)
+    double z() const noexcept { return e.z; }
 
-    constexpr vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
-    constexpr double operator[](int i) const { return e[i]; }
-    constexpr double &operator[](int i) { return e[i]; }
-
-    constexpr vec3 &operator+=(const vec3 &v) {
-        e[0] += v.e[0];
-        e[1] += v.e[1];
-        e[2] += v.e[2];
+#pragma optimize("gt", on)
+    glm::dvec3 getE() const noexcept { return e; }
+#pragma optimize("gt", on)
+    vec3 operator-() const noexcept { return vec3(-e.x, -e.y, -e.z); }
+#pragma optimize("gt", on)
+    double operator[](int i) const { return e[i]; }
+#pragma optimize("gt", on)
+    double &operator[](int i) { return e[i]; }
+#pragma optimize("gt", on)
+    vec3 &operator+=(const vec3 &v) {
+        e += v.e;
         return *this;
     }
-
-    constexpr vec3 &operator*=(double t) {
-        e[0] *= t;
-        e[1] *= t;
-        e[2] *= t;
+#pragma optimize("gt", on)
+    vec3 &operator*=(double t) {
+        e *= t;
         return *this;
     }
-
-    constexpr vec3 &operator/=(double t) { return *this *= 1 / t; }
-
-    constexpr double length() const { return sqrtcx(length_squared()); }
-
-    constexpr double length_squared() const { return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; }
-
-    constexpr std::string toString() const {
-        return "(" + std::to_string(e[0]) + ", " + std::to_string(e[1]) + ", " + std::to_string(e[2]) + ")";  // NOSONAR
+#pragma optimize("gt", on)
+    vec3 &operator/=(double t) { return *this *= 1.0 / t; }
+#pragma optimize("gt", on)
+    double length() const { return glm::length(e); }
+#pragma optimize("gt", on)
+    double length_squared() const { return glm::dot(e, e); }
+#pragma optimize("gt", on)
+    bool near_zero() const noexcept {
+        constexpr double s = 1e-8;
+        return (std::fabs(e.x) < s) && (std::fabs(e.y) < s) && (std::fabs(e.z) < s);
     }
-    static constexpr vec3 random() { return vec3(random_double(), random_double(), random_double()); }
-
-    static constexpr vec3 random(double min, double max) {
-        return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
-    }
-
-private:
-    constexpr double sqrtNewtonRaphson(double x, double curr, double prev) const {
-        return curr == prev ? curr : sqrtNewtonRaphson(x, 0.5 * (curr + x / curr), curr);
-    }
-
-    constexpr double sqrtcx(double x) const {
-        return x >= 0 && x < std::numeric_limits<double>::infinity() ? sqrtNewtonRaphson(x, x, 0)
-                                                                     : std::numeric_limits<double>::quiet_NaN();
+#pragma optimize("gt", on)
+    static vec3 random() { return vec3(glm::linearRand(0.0, 1.0), glm::linearRand(0.0, 1.0), glm::linearRand(0.0, 1.0)); }
+#pragma optimize("gt", on)
+    static vec3 random(double min, double max) {
+        return vec3(glm::linearRand(min, max), glm::linearRand(min, max), glm::linearRand(min, max));
     }
 };
 
-// point3 is just an alias for vec3, but useful for geometric clarity in the code.
 using point3 = vec3;
-using Color = vec3;
-constexpr vec3 operator+(const vec3 &u, const vec3 &v) { return vec3(u.x() + v.x(), u.y() + v.y(), u.z() + v.z()); }
-constexpr vec3 operator-(const vec3 &u, const vec3 &v) { return vec3(u.x() - v.x(), u.y() - v.y(), u.z() - v.z()); }
-constexpr vec3 operator*(const vec3 &u, const vec3 &v) { return vec3(u.x() * v.x(), u.y() * v.y(), u.z() * v.z()); }
-constexpr vec3 operator*(double t, const vec3 &v) { return vec3(t * v.x(), t * v.y(), t * v.z()); }
-constexpr vec3 operator*(const vec3 &v, double t) { return t * v; }
-constexpr vec3 operator/(const vec3 &v, double t) { return (1 / t) * v; }
-constexpr double dot(const vec3 &u, const vec3 &v) { return u.x() * v.x() + u.y() * v.y() + u.z() * v.z(); }
-constexpr vec3 cross(const vec3 &u, const vec3 &v) {
-    return vec3(u.y() * v.z() - u.z() * v.y(), u.z() * v.x() - u.x() * v.z(), u.x() * v.y() - u.y() * v.x());
-}
-
-constexpr vec3 unit_vector(vec3 v) { return v / v.length(); }
-constexpr vec3 random_in_unit_disk() {
+using color = vec3;
+#pragma optimize("gt", on)
+inline std::string toString(const vec3 &v) { return glm::to_string(v.getE()); }
+#pragma optimize("gt", on)
+inline vec3 operator+(const vec3 &u, const vec3 &v) { return vec3(u.getE() + v.getE()); }
+#pragma optimize("gt", on)
+inline vec3 operator-(const vec3 &u, const vec3 &v) { return vec3(u.getE() - v.getE()); }
+#pragma optimize("gt", on)
+inline vec3 operator*(const vec3 &u, const vec3 &v) { return vec3(u.getE() * v.getE()); }
+#pragma optimize("gt", on)
+inline vec3 operator*(double t, const vec3 &v) { return vec3(t * v.getE()); }
+#pragma optimize("gt", on)
+inline vec3 operator*(const vec3 &v, double t) { return t * v; }
+#pragma optimize("gt", on)
+inline vec3 operator/(vec3 v, double t) { return (1.0 / t) * v; }
+#pragma optimize("gt", on)
+inline double dot(const vec3 &u, const vec3 &v) { return glm::dot(u.getE(), v.getE()); }
+#pragma optimize("gt", on)
+inline vec3 cross(const vec3 &u, const vec3 &v) { return vec3(glm::cross(u.getE(), v.getE())); }
+#pragma optimize("gt", on)
+inline vec3 unit_vector(vec3 v) { return v / v.length(); }
+#pragma optimize("gt", on)
+inline vec3 random_in_unit_disk() {
     while(true) {
-        auto p = vec3(random_double(-1, 1), random_double(-1, 1), 0);
-        if(p.length_squared() < 1)
+        auto p = vec3(glm::linearRand(-1.0, 1.0), glm::linearRand(-1.0, 1.0), 0.0);
+        if(glm::length2(p.getE()) < 1.0)
             return p;
     }
 }
-
-constexpr vec3 random_in_unit_sphere() {
+#pragma optimize("gt", on)
+inline vec3 random_in_unit_sphere() {
     while(true) {
-        auto p = vec3::random(-1, 1);
-        if(p.length_squared() < 1)
+        auto p = vec3::random(-1.0, 1.0);
+        if(glm::length2(p.getE()) < 1.0)
             return p;
     }
 }
-
-constexpr vec3 random_unit_vector() { return unit_vector(random_in_unit_sphere()); }
-
-constexpr vec3 random_on_hemisphere(const vec3 &normal) {
+#pragma optimize("gt", on)
+inline vec3 random_unit_vector() { return unit_vector(random_in_unit_sphere()); }
+#pragma optimize("gt", on)
+inline vec3 random_on_hemisphere(const vec3 &normal) {
     vec3 on_unit_sphere = random_unit_vector();
-    if(dot(on_unit_sphere, normal) > 0.0)  // In the same hemisphere as the normal
+    if(glm::dot(on_unit_sphere.getE(), normal.getE()) > 0.0)
         return on_unit_sphere;
     else
         return -on_unit_sphere;
+}
+#pragma optimize("gt", on)
+inline vec3 reflect(const vec3 &v, const vec3 &n) { return v - 2.0 * dot(v, n) * n; }
+#pragma optimize("gt", on)
+inline vec3 refract(const vec3 &uv, const vec3 &n, double etai_over_etat) {
+    auto cos_theta = glm::min(glm::dot(-uv.getE(), n.getE()), 1.0);
+    const vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
+    const vec3 r_out_parallel = -std::sqrt(glm::abs(1.0 - glm::length2(r_out_perp.getE()))) * n;
+    return r_out_perp + r_out_parallel;
 }

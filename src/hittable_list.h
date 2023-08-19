@@ -7,7 +7,7 @@ public:
     std::vector<shared_ptr<hittable>> objects;
 
     hittable_list() = default;
-    hittable_list(shared_ptr<hittable> object) { add(object); }
+    explicit hittable_list(shared_ptr<hittable> object) { add(object); }
 
     void clear() noexcept { objects.clear(); }
 

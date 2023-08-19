@@ -1,22 +1,18 @@
-#ifndef EBO_CLASS_H
-#define EBO_CLASS_H
+#pragma once
 
-#include<glad/glad.h>
+#include <glad/glad.h>
 
-class EBO
-{
+class EBO {
 public:
-	// ID reference of Elements Buffer Object
-	GLuint ID;
-	// Constructor that generates a Elements Buffer Object and links it to indices
-	EBO(GLuint* indices, GLsizeiptr size);
+    // ID reference of Elements Buffer Object
+    GLuint ID{};
+    // Constructor that generates a Elements Buffer Object and links it to indices
+    EBO(const GLuint *indices, GLsizeiptr size) noexcept;
 
-	// Binds the EBO
-	void Bind();
-	// Unbinds the EBO
-	void Unbind();
-	// Deletes the EBO
-	void Delete();
+    // Binds the EBO
+    void Bind() noexcept;
+    // Unbinds the EBO
+    void Unbind() noexcept;
+    // Deletes the EBO
+    void Delete() noexcept;
 };
-
-#endif

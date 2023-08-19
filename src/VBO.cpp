@@ -8,10 +8,10 @@ VBO::VBO(GLdouble *vertices, GLsizeiptr size) noexcept {
 }
 
 // Binds the VBO
-void VBO::Bind() noexcept { glBindBuffer(GL_ARRAY_BUFFER, ID); }
+void VBO::Bind() const noexcept { glBindBuffer(GL_ARRAY_BUFFER, ID); }
 
 // Unbinds the VBO
-void VBO::Unbind() noexcept { glBindBuffer(GL_ARRAY_BUFFER, 0); }
+void VBO::Unbind() const noexcept { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
 // Deletes the VBO
-void VBO::Delete() noexcept { glDeleteBuffers(1, &ID); }
+void VBO::Delete() const noexcept { glDeleteBuffers(1, &ID); }
