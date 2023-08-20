@@ -61,8 +61,6 @@
     <IntDir>bin-int\Debug-windows-x86_64\glraytracer\</IntDir>
     <TargetName>glraytracer</TargetName>
     <TargetExt>.exe</TargetExt>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -70,8 +68,6 @@
     <IntDir>bin-int\Release-windows-x86_64\glraytracer\</IntDir>
     <TargetName>glraytracer</TargetName>
     <TargetExt>.exe</TargetExt>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -79,8 +75,6 @@
     <IntDir>bin-int\Dist-windows-x86_64\glraytracer\</IntDir>
     <TargetName>glraytracer</TargetName>
     <TargetExt>.exe</TargetExt>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -160,9 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\EBO.h" />
-    <ClInclude Include="src\material.h" />
     <ClInclude Include="src\Ray.h" />
-    <ClInclude Include="src\rtweekend.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Timer.h" />
@@ -175,6 +167,8 @@
     <ClInclude Include="src\hittable.h" />
     <ClInclude Include="src\hittable_list.h" />
     <ClInclude Include="src\interval.h" />
+    <ClInclude Include="src\material.h" />
+    <ClInclude Include="src\rtweekend.h" />
     <ClInclude Include="src\sphere.h" />
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +180,14 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\stb.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\default.frag" />
+    <None Include="src\default.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\output_image.png" />
+    <Image Include="src\pop_cat.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

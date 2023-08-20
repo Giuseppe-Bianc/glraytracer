@@ -10,7 +10,20 @@ project "glraytracer"
    targetdir "bin/%{cfg.buildcfg}"
    staticruntime "off"
 
-   files { "src/**.h", "src/**.cpp", "src/**.c" }
+   files { 
+      "src/**.h", 
+      "src/**.cpp", 
+      "src/**.c",
+      "src/**.frag",
+      "src/**.vert",
+      "src/**.png"
+   }
+   vpaths {
+        ["Headers"] = { "**.h", "**.hpp" },
+        ["Sources/*"] = {"**.c", "**.cpp"},
+        ["Resources"] = {"**.frag", "**.vert","**.png"};
+        ["Docs"] = "**.md"
+    }
 
    includedirs {
       "external/spdlog/include",
