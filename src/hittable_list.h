@@ -1,5 +1,6 @@
 #pragma once
 
+#include "hittable.h"
 #include "rtweekend.h"
 
 class hittable_list : public hittable {

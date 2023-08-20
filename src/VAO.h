@@ -12,9 +12,9 @@ public:
     void LinkAttrib(VBO &VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride,
                     const void *offset) const noexcept;
     // Binds the VAO
-    void Bind() noexcept;
+    void Bind() const noexcept;
     // Unbinds the VAO
-    void Unbind() noexcept;
+    void Unbind() const noexcept;
     // Deletes the VAO
-    void Delete() noexcept;
+    void Delete() const noexcept;
 };

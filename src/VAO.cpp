@@ -12,10 +12,10 @@ void VAO::LinkAttrib(VBO &VBO, GLuint layout, GLuint numComponents, GLenum type,
 }
 
 // Binds the VAO
-void VAO::Bind() noexcept { glBindVertexArray(ID); }
+void VAO::Bind() const noexcept { glBindVertexArray(ID); }
 
 // Unbinds the VAO
-void VAO::Unbind() noexcept { glBindVertexArray(0); }
+void VAO::Unbind() const noexcept { glBindVertexArray(0); }
 
 // Deletes the VAO
-void VAO::Delete() noexcept { glDeleteVertexArrays(1, &ID); }
+void VAO::Delete() const noexcept { glDeleteVertexArrays(1, &ID); }

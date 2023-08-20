@@ -1,3 +1,6 @@
+-- Check if the target CPU is AMD (this is a simplified example, you might need to replace it with a proper CPU detection method)
+local isAMDCPU = os.host() == "windows" and os.outputof("detect_amd_cpu_tool") == "AMD"
+
 workspace "glraytracer"
    architecture "x64"
    configurations { "Debug", "Release", "Dist" }
@@ -38,7 +41,12 @@ project "glraytracer"
         "glfw3"
         -- Aggiungi qui eventuali altre librerie OpenGL o di sistema necessarie
     }
-   
+
+   if isAMDCPU then
+      includedirs { "path_to_aocl_include_folder" }
+      libdirs { "path_to_aocl_lib_folder" }
+      links { "aocl_library_name" }
+   end   
    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 

@@ -5,7 +5,9 @@ std::string get_file_contents(const char *filname) {
     if(std::ifstream in(filname, std::ios::binary); in.is_open()) {
         return std::string(std::istreambuf_iterator<char>(in), {});
     }
-    throw std::runtime_error(std::strerror(errno));
+    char errMessage[256];
+    strerror_s(errMessage, sizeof(errMessage), errno);
+    throw std::runtime_error(errMessage);
 }
 
 // Constructor that build the Shader Program from 2 different shaders

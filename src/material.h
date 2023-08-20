@@ -8,14 +8,14 @@ class material {
 public:
     virtual ~material() = default;
 
-    virtual bool scatter(const ray &r_in, const hit_record &rec, Color &attenuation, ray &scattered) const = 0;
+    virtual bool scatter(const ray &r_in, const hit_record &rec, color &attenuation, ray &scattered) const = 0;
 };
 
 class lambertian : public material {
 public:
-    explicit lambertian(const Color &a) noexcept : albedo(a) {}
+    explicit lambertian(const color &a) noexcept : albedo(a) {}
 
-    bool scatter(const ray &r_in, const hit_record &rec, Color &attenuation, ray &scattered) const override {
+    bool scatter(const ray &r_in, const hit_record &rec, color &attenuation, ray &scattered) const override {
         auto scatter_direction = rec.normal + random_unit_vector();
 
         // Catch degenerate scatter direction
@@ -28,14 +28,14 @@ public:
     }
 
 private:
-    Color albedo{};
+    color albedo{};
 };
 
 class metal : public material {
 public:
-    explicit metal(const Color &a, double f) noexcept : albedo(a), fuzz(f < 1 ? f : 1) {}
+    explicit metal(const color &a, double f) noexcept : albedo(a), fuzz(f < 1 ? f : 1) {}
 
-    bool scatter(const ray &r_in, const hit_record &rec, Color &attenuation, ray &scattered) const override {
+    bool scatter(const ray &r_in, const hit_record &rec, color &attenuation, ray &scattered) const override {
         const vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
         scattered = ray(rec.p, reflected + fuzz * random_unit_vector());
         attenuation = albedo;
@@ -43,7 +43,7 @@ public:
     }
 
 private:
-    Color albedo{};
+    color albedo{};
     double fuzz;
 };
 
@@ -51,8 +51,8 @@ class dielectric : public material {
 public:
     explicit dielectric(double index_of_refraction) noexcept : ir(index_of_refraction) {}
 
-    bool scatter(const ray &r_in, const hit_record &rec, Color &attenuation, ray &scattered) const override {
-        attenuation = Color(1.0, 1.0, 1.0);
+    bool scatter(const ray &r_in, const hit_record &rec, color &attenuation, ray &scattered) const override {
+        attenuation = color(1.0, 1.0, 1.0);
         const double refraction_ratio = rec.front_face ? (1.0 / ir) : ir;
 
         const vec3 unit_direction = unit_vector(r_in.direction());

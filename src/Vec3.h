@@ -52,12 +52,12 @@ public:
     static vec3 random(double min, double max) {
         return vec3(glm::linearRand(min, max), glm::linearRand(min, max), glm::linearRand(min, max));
     }
+#pragma optimize("gt", on)
+    inline std::string toString() const { return glm::to_string(e); }
 };
 
 using point3 = vec3;
 using color = vec3;
-#pragma optimize("gt", on)
-inline std::string toString(const vec3 &v) { return glm::to_string(v.getE()); }
 #pragma optimize("gt", on)
 inline vec3 operator+(const vec3 &u, const vec3 &v) { return vec3(u.getE() + v.getE()); }
 #pragma optimize("gt", on)
@@ -75,7 +75,7 @@ inline double dot(const vec3 &u, const vec3 &v) { return glm::dot(u.getE(), v.ge
 #pragma optimize("gt", on)
 inline vec3 cross(const vec3 &u, const vec3 &v) { return vec3(glm::cross(u.getE(), v.getE())); }
 #pragma optimize("gt", on)
-inline vec3 unit_vector(vec3 v) { return v / v.length(); }
+inline vec3 unit_vector(vec3 v) { return vec3(glm::normalize(v.getE())); }
 #pragma optimize("gt", on)
 inline vec3 random_in_unit_disk() {
     while(true) {
